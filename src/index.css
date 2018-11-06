@@ -53,3 +53,7 @@ ul {
 .buttonText {
   font-weight: bold;
 }
+
+.winner {
+  color: red;
+}
