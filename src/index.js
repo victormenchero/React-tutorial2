@@ -13,6 +13,7 @@ class Board extends React.Component {
   renderSquare(i) {
     return (
       <Square
+        key={i}
         value={this.props.squares[i]}
         onClick={() => this.props.onClick(i)}
       />
@@ -28,7 +29,11 @@ class Board extends React.Component {
         rowsDiv.push(this.renderSquare(cont));
         cont++;
       }
-      outerDiv.push(<div className="board-row">{rowsDiv}</div>);
+      outerDiv.push(
+        <div key={cont} className="board-row">
+          {rowsDiv}
+        </div>,
+      );
     }
     return outerDiv;
   };
@@ -45,6 +50,7 @@ class Game extends React.Component {
       history: [{ squares: Array(9).fill(null), click: 0 }],
       stepNumber: 0,
       xIsNext: true,
+      isReverse: false,
     };
   }
 
@@ -70,20 +76,25 @@ class Game extends React.Component {
     });
   }
 
+  reversePlease() {
+    this.setState(
+      (prevState) => ({ isReverse: !prevState.isReverse }),
+      () => console.log(this.state.isReverse),
+    );
+  }
+
   render() {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
-    console.log('----------');
     let _getClassNames = '';
 
-    const moves = history.map((step, move) => {
+    let moves = history.map((step, move) => {
       if (this.state.stepNumber === move) {
         _getClassNames = 'buttonText';
       } else {
         _getClassNames = '';
       }
-      console.log(step);
       const position = [
         '(0,0)',
         '(0,1)',
@@ -108,6 +119,11 @@ class Game extends React.Component {
         </li>
       );
     });
+
+    if (this.state.isReverse) {
+      moves = moves.reverse();
+    }
+
     let status;
     if (winner) {
       status = 'Winner' + winner;
@@ -125,6 +141,9 @@ class Game extends React.Component {
         <div className="game-info">
           <div>{status}</div>
           <ol>{moves}</ol>
+        </div>
+        <div className="buttonContainer">
+          <button onClick={() => this.reversePlease()}>Reverse me!</button>
         </div>
       </div>
     );
